@@ -12,14 +12,11 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
 
-        for (int i = 0; i < 100000; i++) {
+        for (int i = 0; i < 20; i++) {
 
             Thread.sleep(new Random().nextInt(400));
-
-            // '{"short_message":"Hello there", "host":"example.org", "facility":"test", "_foo":"bar"}'
             String ipAddress = randomIp();
-//            ipAddress = "104.131.72.189";
-            DnsRequestPackage content = new DnsRequestPackage(ipAddress, "houstonvoicepiano.com");
+            DnsRequestPackage content = new DnsRequestPackage(ipAddress, "somehostname");
             content.setHost(ipAddress);
             content.setShortMessage(ipAddress);
             sendRequest(new Gson().toJson(content));
@@ -57,9 +54,6 @@ public class Main {
                                                                    System.out.println(t);
                                                                }
                                                            });
-
-
-
 
         Response response = future.get();
         System.out.println(response.getStatusCode());
