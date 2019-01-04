@@ -3,6 +3,8 @@ import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
 import com.ning.http.client.Response;
 import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Random;
 
@@ -10,6 +12,8 @@ public class Main {
 
     private static final String GRYLOG_INPUT_URI = "http://127.0.0.1:16000/gelf";
     private static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
+
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
 
     public static void main(String[] args) throws Exception {
 
@@ -37,7 +41,7 @@ public class Main {
         json.put("_dest_addr", "" + randomIp());
         json.put("_user_id", randomInt());
         json.put("_some_env_var", "bar");
-        System.out.println(String.format("Request JSON [%s]", json));
+        LOG.info("Request JSON {}", json);
 
         return json.toString();
     }
@@ -61,7 +65,7 @@ public class Main {
                                                            });
 
         Response response = future.get();
-        System.out.println(String.format("Response code [%d]", response.getStatusCode()));
+        LOG.info("Response code {}", response.getStatusCode());
     }
 
     private static String randomIp() {
