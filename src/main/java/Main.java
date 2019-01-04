@@ -1,4 +1,3 @@
-import com.google.gson.Gson;
 import com.ning.http.client.AsyncCompletionHandler;
 import com.ning.http.client.AsyncHttpClient;
 import com.ning.http.client.ListenableFuture;
@@ -8,49 +7,47 @@ import java.util.Random;
 
 public class Main {
 
+    public static final String GRYLOG_INPUT_URI = "http://127.0.0.1:16000/gelf";
     static AsyncHttpClient asyncHttpClient = new AsyncHttpClient();
 
     public static void main(String[] args) throws Exception {
 
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 20000; i++) {
 
+            // Random delay to slow sending down a bit.
             Thread.sleep(new Random().nextInt(400));
-            String ipAddress = randomIp();
-            DnsRequestPackage content = new DnsRequestPackage(ipAddress, "somehostname");
-            content.setHost(ipAddress);
-            content.setShortMessage(ipAddress);
-            sendRequest(new Gson().toJson(content));
+
+            String content = "{\n" +
+                             "  \"version\": \"1.1\",\n" +
+                             "  \"host\": \"example.org\",\n" +
+                             "  \"short_message\": \"A short message that helps you identify what is going on\",\n" +
+                             "  \"full_message\": \"Backtrace here\\n\\nmore stuff\",\n" +
+                             "  \"level\": 1,\n" +
+                             "  \"_user_id\": 9001,\n" +
+                             "  \"_some_info\": \"foo\",\n" +
+                             "  \"_source_address\": \"10.0.0.0\",\n" +
+                             "  \"_some_env_var\": \"bar\"\n" +
+                             "}";
+
+            sendRequest(content);
         }
     }
 
     private static void sendRequest(String content) throws InterruptedException, java.util.concurrent.ExecutionException {
 
-        content = "{\n" +
-                  "  \"version\": \"1.1\",\n" +
-                  "  \"host\": \"example.org\",\n" +
-                  "  \"short_message\": \"A short message that helps you identify what is going on\",\n" +
-                  "  \"full_message\": \"Backtrace here\\n\\nmore stuff\",\n" +
-                  "  \"timestamp\": 1385053862.3072,\n" +
-                  "  \"level\": 1,\n" +
-                  "  \"_user_id\": 9001,\n" +
-                  "  \"_some_info\": \"foo\",\n" +
-                  "  \"_some_env_var\": \"bar\"\n" +
-                  "}";
-
-        ListenableFuture<Response> future = asyncHttpClient.preparePost("http://127.0.0.1:16000/gelf")
+        ListenableFuture<Response> future = asyncHttpClient.preparePost(GRYLOG_INPUT_URI)
                                                            .setBody(content)
                                                            .execute(new AsyncCompletionHandler<Response>() {
 
                                                                @Override
                                                                public Response onCompleted(Response response) throws Exception {
-                                                                   // Do something with the Response
-                                                                   // ...
+                                                                   // Do nothing with the response
                                                                    return response;
                                                                }
 
                                                                @Override
                                                                public void onThrowable(Throwable t) {
-                                                                   // Something wrong happened.
+                                                                   // Something bad happened.
                                                                    System.out.println(t);
                                                                }
                                                            });
