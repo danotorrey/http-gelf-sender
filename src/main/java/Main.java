@@ -37,12 +37,10 @@ public class Main {
         json.put("_dest_addr", "" + randomIp());
         json.put("_user_id", randomInt());
         json.put("_some_env_var", "bar");
-
         System.out.println(String.format("Request JSON [%s]", json));
 
         return json.toString();
     }
-
 
     private static void sendRequest(String content) throws InterruptedException, java.util.concurrent.ExecutionException {
 
