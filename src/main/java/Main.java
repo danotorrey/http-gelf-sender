@@ -36,15 +36,19 @@ public class Main {
             RestTemplate restTemplate = new RestTemplate();
 
             // Send it.
-            ResponseEntity<String> responseEntity = restTemplate.postForEntity(GRAYLOG_INPUT_URI, entity, String.class);
+            try {
+                ResponseEntity<String> responseEntity = restTemplate.postForEntity(GRAYLOG_INPUT_URI, entity, String.class);
 
-            // Handle response.
-            if (responseEntity.getStatusCode().is2xxSuccessful()) {
-                LOG.info("Success: Response code [{}]", responseEntity.getStatusCodeValue());
-            } else {
-                LOG.info("Error: response code [{}], reason [{}].",
-                         responseEntity.getStatusCodeValue(),
-                         responseEntity.getStatusCode().getReasonPhrase());
+                // Handle response.
+                if (responseEntity.getStatusCode().is2xxSuccessful()) {
+                    LOG.info("Success: Response code [{}]", responseEntity.getStatusCodeValue());
+                } else {
+                    LOG.info("Error: response code [{}], reason [{}].",
+                             responseEntity.getStatusCodeValue(),
+                             responseEntity.getStatusCode().getReasonPhrase());
+                }
+            } catch (Exception e) {
+                LOG.error("An exception was thrown [{}]", e.getMessage() );
             }
         }
     }
